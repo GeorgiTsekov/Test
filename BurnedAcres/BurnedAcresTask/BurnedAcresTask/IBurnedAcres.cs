@@ -4,7 +4,8 @@
     {
         int Width { get; }
         int Height { get; }
-        void InputCoordinatesWithFire();
+        int CoordinatesCount { get; }
+        string InputCoordinatesWithFire(string input);
         int CalcFiresCount();
         int CalcHoursToBurnAllAcres();
         string ToStringResults(int fires, int hours);

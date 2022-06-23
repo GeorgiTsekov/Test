@@ -1,6 +1,7 @@
 ﻿namespace BurnedAcres
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Text;
 
@@ -50,42 +51,37 @@
             }
         }
 
-        public void InputCoordinatesWithFire()
+        public int CoordinatesCount { get; private set; }
+
+        public string InputCoordinatesWithFire(string input)
         {
-            while (true)
+            if (input.ToLower() == Constants.STOP)
             {
-                Console.Write("Add two coordinates like: '0 0', or word 'STOP': ");
-                var input = Console.ReadLine();
-                if (input.ToLower() == "stop")
-                {
-                    break;
-                }
-
-                if (input.Count(x => Char.IsWhiteSpace(x)) != 1 || input.Any(x => !Char.IsWhiteSpace(x) && !Char.IsDigit(x)))
-                {
-                    Console.WriteLine("The coordinates shoult be two integers separated by space!");
-                    continue;
-                }
-
-                var coordinatesWithFire = input.Split().Select(int.Parse).ToArray();
-                int row = coordinatesWithFire[0];
-                int col = coordinatesWithFire[1];
-
-                if (AreInside(row, col))
-                {
-                    Console.WriteLine("Current coordinates are outside of the land!");
-                    continue;
-                }
-
-                if (land[row, col] != 0)
-                {
-                    Console.WriteLine($"Coordinates: {row}, {col} have been added already!");
-                    continue;
-                }
-
-                land[row, col] = 'F';
-                Console.WriteLine($"You add coordinates: {row}, {col} to the land!");
+                return Constants.STOP;
             }
+
+            if (input.Count(x => Char.IsWhiteSpace(x)) != 1 || input.Any(x => !Char.IsWhiteSpace(x) && !Char.IsDigit(x)))
+            {
+                return Constants.TWO_INTEGERS_WITH_SPACE;
+            }
+
+            var coordinatesWithFire = input.Split().Select(int.Parse).ToArray();
+            int row = coordinatesWithFire[0];
+            int col = coordinatesWithFire[1];
+
+            if (AreOutside(row, col))
+            {
+                return Constants.OUT_OF_RANGE;
+            }
+
+            if (land[row, col] != 0)
+            {
+                return Constants.ADDED_ALREADY;
+            }
+
+            CoordinatesCount++;
+            land[row, col] = 'F';
+            return Constants.SUCCESSFULL;
         }
 
         public int CalcFiresCount()
@@ -123,7 +119,7 @@
             var result = new StringBuilder();
             if (hours < 0 || fires == 0)
             {
-                result.AppendLine("No fires on the land");
+                result.AppendLine(Constants.NO_FIRES);
             }
             else
             {
@@ -199,7 +195,7 @@
 
         private static void AddVisitedIfNotAdded(int row, int col)
         {
-            if (AreInside(row, col))
+            if (AreOutside(row, col))
             {
                 return;
             }
@@ -214,7 +210,7 @@
 
         private static void ExploreLandAddVisitedAndUpdateSize(int row, int col)
         {
-            if (AreInside(row, col))
+            if (AreOutside(row, col))
             {
                 return;
             }
@@ -251,7 +247,7 @@
             }
         }
 
-        private static bool AreInside(int row, int col)
+        private static bool AreOutside(int row, int col)
         {
             if (land.GetLength(0) <= row || land.GetLength(1) <= col || row < 0 || col < 0)
             {

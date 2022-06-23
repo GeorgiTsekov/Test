@@ -8,7 +8,7 @@
         {
             while (true)
             {
-                Console.Write($"Add positive integer for {name} of the land: ");
+                Console.Write(Constants.ADD_POSITIVE_INTEGER, name);
                 int width = IsValid(Console.ReadLine());
                 if (width > 0)
                 {
@@ -17,24 +17,24 @@
             }
         }
 
-        private static int IsValid(string n)
+        public int IsValid(string n)
         {
             if (String.IsNullOrWhiteSpace(n))
             {
-                Console.WriteLine("The number cannot be null or whitespace!");
+                Console.WriteLine(Constants.NULL_OR_WHITESPACE);
                 return -1;
             }
             bool isInteger = Int32.TryParse(n, out int result);
 
             if (!isInteger)
             {
-                Console.WriteLine("The number shout be positive Integer!");
+                Console.WriteLine(Constants.NOT_INTEGER);
                 return -1;
             }
 
             if (result < 1)
             {
-                Console.WriteLine($"Integer: {result} is not valid. Integer shout be bigger then 0!");
+                Console.WriteLine(Constants.NOT_POSITIVE);
             }
 
             return result;
