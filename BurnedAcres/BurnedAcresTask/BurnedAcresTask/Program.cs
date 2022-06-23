@@ -25,7 +25,7 @@
                 Console.WriteLine(output);
             }
             
-            var watch = System.Diagnostics.Stopwatch.StartNew();
+            //var watch = System.Diagnostics.Stopwatch.StartNew();
 
             Console.WriteLine(burnedAcres.CoordinatesCount);
             int firesCount = burnedAcres.CalcFiresCount();
@@ -33,9 +33,9 @@
             var result = burnedAcres.ToStringResults(firesCount, hours);
             Console.WriteLine(result);
 
-            watch.Stop();
-            var elapsedMs = watch.ElapsedMilliseconds;
-            Console.WriteLine($"Ms: {elapsedMs}");
+            //watch.Stop();
+            //var elapsedMs = watch.ElapsedMilliseconds;
+            //Console.WriteLine($"Ms: {elapsedMs}");
         }
     }
 }
