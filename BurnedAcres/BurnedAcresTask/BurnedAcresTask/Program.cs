@@ -1,6 +1,8 @@
 ﻿namespace BurnedAcres
 {
     using System;
+    using System.IO;
+    using System.Text;
 
     class Program
     {
@@ -25,17 +27,22 @@
                 Console.WriteLine(output);
             }
             
-            //var watch = System.Diagnostics.Stopwatch.StartNew();
+            var watch = System.Diagnostics.Stopwatch.StartNew();
 
-            Console.WriteLine(burnedAcres.CoordinatesCount);
             int firesCount = burnedAcres.CalcFiresCount();
             int hours = burnedAcres.CalcHoursToBurnAllAcres();
             var result = burnedAcres.ToStringResults(firesCount, hours);
+            
             Console.WriteLine(result);
 
-            //watch.Stop();
-            //var elapsedMs = watch.ElapsedMilliseconds;
-            //Console.WriteLine($"Ms: {elapsedMs}");
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            using (var stream = new StreamWriter("myTextFile.txt", false, Encoding.UTF8))
+            {
+                stream.Write(result);
+                stream.WriteLine();
+                stream.Write($"Ms: {elapsedMs}");
+            }
         }
     }
 }
