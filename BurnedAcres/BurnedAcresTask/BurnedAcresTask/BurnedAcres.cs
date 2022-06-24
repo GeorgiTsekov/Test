@@ -1,6 +1,7 @@
 ﻿namespace BurnedAcres
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Text;
 
@@ -11,13 +12,14 @@
         private static int size;
         private static int[,] land;
         private static bool[,] visited;
-
+        private static HashSet<Coordinate> coordinates;
         public BurnedAcres(int width, int height)
         {
             this.Width = width;
             this.Height = height;
             land = new int[this.Width, this.Height];
             visited = new bool[this.Width, this.Height];
+            coordinates = new HashSet<Coordinate>();
         }
 
         public int Width
@@ -78,6 +80,8 @@
                 return Constants.ADDED_ALREADY;
             }
 
+            var coordinate = new Coordinate(row, col);
+            coordinates.Add(coordinate);
             CoordinatesCount++;
             land[row, col] = 'F';
             return Constants.SUCCESSFULL;
@@ -86,20 +90,18 @@
         public int CalcFiresCount()
         {
             int countOfFires = 0;
-            for (int i = 0; i < land.GetLength(0); i++)
+            foreach (var coordinate in coordinates)
             {
-                for (int j = 0; j < land.GetLength(1); j++)
+                int row = coordinate.Row;
+                int col = coordinate.Col;
+                size = 0;
+                if (!visited[row, col])
                 {
-                    size = 0;
-                    if (land[i, j] == 'F' && !visited[i, j])
-                    {
-                        ExploreLandAddVisitedAndUpdateSize(i, j);
-                    }
-
-                    if (size != 0)
-                    {
-                        countOfFires++;
-                    }
+                    ExploreLandAddVisitedAndUpdateSize(row, col);
+                }
+                if (size != 0)
+                {
+                    countOfFires++;
                 }
             }
 
@@ -108,9 +110,8 @@
 
         public int CalcHoursToBurnAllAcres()
         {
-            bool isNotVisited = false;
             int hours = 0;
-            return AddFiresToVisitedAndCheckForMoreNotVisited(isNotVisited, hours);
+            return AddFiresToVisitedAndCheckForMoreNotVisited(hours);
         }
 
         public string ToStringResults(int fires, int hours)
@@ -129,43 +130,16 @@
             return result.ToString().TrimEnd();
         }
 
-        private static int AddFiresToVisitedAndCheckForMoreNotVisited(bool isNotVisited, int hours)
+        private static int AddFiresToVisitedAndCheckForMoreNotVisited(int hours)
         {
-            bool isVisited = false;
-
-            while (true)
+            if (coordinates.Count == 0)
             {
-                for (int i = 0; i < land.GetLength(0); i++)
-                {
-                    for (int j = 0; j < land.GetLength(1); j++)
-                    {
-                        if (!visited[i, j])
-                        {
-                            isNotVisited = true;
-                        }
-                        else
-                        {
-                            isVisited = true;
-                            land[i, j] = 'F';
-                        }
-                    }
-                }
-
-                if (!isVisited)
-                {
-                    return -1;
-                }
-
-                if (isNotVisited)
-                {
-                    hours++;
-                    AddVisitAroundFires();
-                    isNotVisited = false;
-                }
-                else
-                {
-                    break;
-                }
+                return -1;
+            }
+            while (coordinates.Count < land.Length)
+            {
+                hours++;
+                AddVisitAroundFires();
             }
 
             return hours;
@@ -173,22 +147,19 @@
 
         private static void AddVisitAroundFires()
         {
-            for (int i = 0; i < land.GetLength(0); i++)
+            var list = coordinates.ToList();
+            foreach (var coordinate in list)
             {
-                for (int j = 0; j < land.GetLength(1); j++)
-                {
-                    if (land[i, j] == 'F')
-                    {
-                        AddVisitedIfNotAdded(i - 1, j);
-                        AddVisitedIfNotAdded(i + 1, j);
-                        AddVisitedIfNotAdded(i, j - 1);
-                        AddVisitedIfNotAdded(i, j + 1);
-                        AddVisitedIfNotAdded(i + 1, j + 1);
-                        AddVisitedIfNotAdded(i - 1, j - 1);
-                        AddVisitedIfNotAdded(i + 1, j - 1);
-                        AddVisitedIfNotAdded(i - 1, j + 1);
-                    }
-                }
+                int row = coordinate.Row;
+                int col = coordinate.Col;
+                AddVisitedIfNotAdded(row - 1, col);
+                AddVisitedIfNotAdded(row + 1, col);
+                AddVisitedIfNotAdded(row, col - 1);
+                AddVisitedIfNotAdded(row, col + 1);
+                AddVisitedIfNotAdded(row + 1, col + 1);
+                AddVisitedIfNotAdded(row - 1, col - 1);
+                AddVisitedIfNotAdded(row + 1, col - 1);
+                AddVisitedIfNotAdded(row - 1, col + 1);
             }
         }
 
@@ -202,6 +173,12 @@
             if (visited[row, col])
             {
                 return;
+            }
+
+            var coordinate = new Coordinate(row, col);
+            if (!coordinates.Contains(coordinate))
+            {
+                coordinates.Add(coordinate);
             }
 
             visited[row, col] = true;

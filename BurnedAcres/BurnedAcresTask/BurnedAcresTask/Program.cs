@@ -4,7 +4,7 @@
     using System.IO;
     using System.Text;
 
-    class Program
+    public class Program
     {
         static void Main()
         {
@@ -37,6 +37,7 @@
 
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
+            Console.WriteLine($"Ms: {elapsedMs}");
             using (var stream = new StreamWriter("myTextFile.txt", false, Encoding.UTF8))
             {
                 stream.Write(result);
